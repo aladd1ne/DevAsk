@@ -13,24 +13,22 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class RandomSpellCommand extends Command
 {
     protected static $defaultName = 'app:random-spell';
-    protected static $defaultDescription = 'Cast a random spell';
-    /**
-     * @var LoggerInterface
-     */
     private $logger;
 
-    public function __construct(LoggerInterface $logger, string $name = null)
+    public function __construct(LoggerInterface $logger)
     {
-        parent::__construct($name);
         $this->logger = $logger;
+
+        parent::__construct();
     }
 
-    protected function configure(): void
+    protected function configure()
     {
         $this
-            ->setDescription(self::$defaultDescription)
+            ->setDescription('Cast a random spell!')
             ->addArgument('your-name', InputArgument::OPTIONAL, 'Your name')
-            ->addOption('yell', null, InputOption::VALUE_NONE, 'Yell?');
+            ->addOption('yell', null, InputOption::VALUE_NONE, 'Yell?')
+        ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -39,7 +37,7 @@ class RandomSpellCommand extends Command
         $yourName = $input->getArgument('your-name');
 
         if ($yourName) {
-            $io->note(sprintf('You passed an argument: %s', $yourName));
+            $io->note(sprintf('Hi %s!', $yourName));
         }
 
         $spells = [
@@ -51,12 +49,14 @@ class RandomSpellCommand extends Command
             'impedimenta',
             'reparo',
         ];
+
         $spell = $spells[array_rand($spells)];
 
         if ($input->getOption('yell')) {
             $spell = strtoupper($spell);
         }
-        $this->logger->info('Casting spell'.$spell);
+
+        $this->logger->info('Casting spell: '.$spell);
 
         $io->success($spell);
 
