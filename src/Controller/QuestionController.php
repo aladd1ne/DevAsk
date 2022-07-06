@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Question;
+use App\Repository\QuestionRepository;
 use App\Service\MarkdownHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -26,20 +27,19 @@ class QuestionController extends AbstractController
     /**
      * @Route("/", name="app_homepage")
      */
-    public function homepage(EntityManagerInterface $entityManager)
+    public function homepage(QuestionRepository $repository)
     {
-        $repository = $entityManager->getRepository(Question::class);
         $questions = $repository->findAllAskedOrderedByNewest();
 
         return $this->render('question/homepage.html.twig', [
-            'questions' => $questions
+            'questions' => $questions,
         ]);
     }
 
     /**
      * @Route("/questions/new")
      */
-    public function new(EntityManagerInterface $entityManager)
+    public function new()
     {
         return new Response('Sounds like a GREAT feature for V2!');
     }
@@ -59,7 +59,6 @@ class QuestionController extends AbstractController
             'Maybe... try saying the spell backwards?',
         ];
 
-
         return $this->render('question/show.html.twig', [
             'question' => $question,
             'answers' => $answers,
@@ -67,21 +66,22 @@ class QuestionController extends AbstractController
     }
 
     /**
-     * @Route("/questions/{slug}/vote", name="app_question_vote",methods="POST")
+     * @Route("/questions/{slug}/vote", name="app_question_vote", methods="POST")
      */
     public function questionVote(Question $question, Request $request, EntityManagerInterface $entityManager)
     {
         $direction = $request->request->get('direction');
+
         if ($direction === 'up') {
             $question->upVote();
         } elseif ($direction === 'down') {
             $question->downVote();
         }
+
         $entityManager->flush();
 
-        return $this->redirectToRoute('app_question_show',[
-            'slug'=>$question->getSlug()
+        return $this->redirectToRoute('app_question_show', [
+            'slug' => $question->getSlug()
         ]);
     }
-
 }

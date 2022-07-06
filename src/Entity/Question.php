@@ -13,9 +13,10 @@ use Gedmo\Timestampable\Traits\TimestampableEntity;
 class Question
 {
     use TimestampableEntity;
+
     /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
+     * @ORM\Id()
+     * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
      */
     private $id;
@@ -106,25 +107,28 @@ class Question
 
     public function getVotesString(): string
     {
-        $prefix = $this->getVotes() >= 0 ? '+' : '-';
+        $prefix = $this->getVotes() >=0 ? '+' : '-';
+
         return sprintf('%s %d', $prefix, abs($this->getVotes()));
+    }
+
+    public function setVotes(int $votes): self
+    {
+        $this->votes = $votes;
+
+        return $this;
     }
 
     public function upVote(): self
     {
         $this->votes++;
+
         return $this;
     }
 
     public function downVote(): self
     {
         $this->votes--;
-        return $this;
-    }
-
-    public function setVotes(int $votes): self
-    {
-        $this->votes = $votes;
 
         return $this;
     }

@@ -4,7 +4,6 @@ namespace App\Factory;
 
 use App\Entity\Question;
 use App\Repository\QuestionRepository;
-use Symfony\Component\String\Slugger\AsciiSlugger;
 use Zenstruck\Foundry\RepositoryProxy;
 use Zenstruck\Foundry\ModelFactory;
 use Zenstruck\Foundry\Proxy;
@@ -33,18 +32,22 @@ final class QuestionFactory extends ModelFactory
     {
         parent::__construct();
 
+        // TODO inject services if required (https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#factories-as-services)
     }
 
-    public function unpublished():self
+    public function unpublished(): self
     {
-        return $this->addState(['askedAt'=>null]);
+        return $this->addState(['askedAt' => null]);
     }
 
     protected function getDefaults(): array
     {
         return [
             'name' => self::faker()->realText(50),
-            'question' => self::faker()->paragraphs(self::faker()->numberBetween(1, 4), true),
+            'question' => self::faker()->paragraphs(
+                self::faker()->numberBetween(1, 4),
+                true
+            ),
             'askedAt' => self::faker()->dateTimeBetween('-100 days', '-1 minute'),
             'votes' => rand(-20, 50),
         ];
@@ -52,9 +55,10 @@ final class QuestionFactory extends ModelFactory
 
     protected function initialize(): self
     {
+        // see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#initialization
         return $this
-//            ->afterInstantiate(function (Question $question): void {})
-            ;
+            // ->afterInstantiate(function(Question $question) {})
+        ;
     }
 
     protected static function getClass(): string
